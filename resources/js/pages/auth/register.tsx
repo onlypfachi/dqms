@@ -1,16 +1,21 @@
 import RegisteredUserController from '@/actions/App/Http/Controllers/Auth/RegisteredUserController';
 import { login } from '@/routes';
 import { Form, Head } from '@inertiajs/react';
-import { LoaderCircle } from 'lucide-react';
+import { ChevronsUpDown, LoaderCircle } from 'lucide-react';
 
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useIsMobile } from '@/hooks/use-mobile';
 import AuthLayout from '@/layouts/auth-layout';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
+import { useState } from 'react';
 
 export default function Register() {
+    const isMobile = useIsMobile();
+    const [role, setRole] = useState<string | null>(null);
     return (
         <AuthLayout title="Create an account" description="Enter your details below to create your account">
             <Head title="Register" />
@@ -80,6 +85,23 @@ export default function Register() {
                                 <InputError message={errors.password_confirmation} />
                             </div>
 
+                            <div className="grid gap-2">
+                                <Label>Role</Label>
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="outline" className="justify-between">
+                                            {role ?? 'Select Role'}
+                                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent className="min-w-56 rounded-lg dark:bg-black bg-amber-200" align="end" side={isMobile ? 'bottom' : 'bottom'}>
+                                        <DropdownMenuItem onSelect={() => setRole('PATIENT')}>Patient</DropdownMenuItem>
+                                        <DropdownMenuItem onSelect={() => setRole('CLINIC MANAGER')}>Clinic Manager</DropdownMenuItem>
+                                        <DropdownMenuItem onSelect={() => setRole('DOCTOR')}>Doctor</DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                                <input type="hidden" name="type" value={role ?? ''} />
+                            </div>
                             <Button type="submit" className="mt-2 w-full" tabIndex={5}>
                                 {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
                                 Create account
